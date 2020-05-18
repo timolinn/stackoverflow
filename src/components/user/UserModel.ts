@@ -61,7 +61,6 @@ export const UserSchema: mongoose.Schema<UserInterface> = new Schema({
   loginAttempts: String,
   ipAddress: String,
   avatar: String,
-  twitter: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
 }, { timestamps: true, toJSON: {
@@ -91,10 +90,6 @@ export interface UserInterface extends mongoose.Document {
   loginAttempts?: string;
   ipAddress?: string;
   avatar?: string;
-  twitter?: string;
-  instagram?: string;
-  facebook?: string;
-  linkedin?: string;
   resetPasswordToken?: string;
   gender?: Gender;
   resetPasswordExpires?: string;

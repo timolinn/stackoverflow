@@ -19,7 +19,11 @@ interface Config {
   redis: { host: string; port: string };
 }
 
-if (!existsSync(".env")) {
+const production = process.env.NODE_ENV === "production";
+const test = process.env.NODE_ENV === "test";
+
+if (!existsSync(".env") && !test) {
+  // eslint-disable-next-line no-console
   console.error(
     ".env file does not exists. please create it by copying .env.example into .env",
   );
@@ -28,8 +32,6 @@ if (!existsSync(".env")) {
 
 dotenv.config({ path: ".env" });
 
-const production = process.env.NODE_ENV === "production";
-const test = process.env.NODE_ENV === "test";
 
 export default <Config> {
   PORT: process.env.SERVER_PORT || 3000,

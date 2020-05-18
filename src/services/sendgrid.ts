@@ -44,7 +44,7 @@ class Sendgrid implements MailerInterface {
       from: `${config.mail.from.name} <${config.mail.from.email}>`,
       subject: this.subject,
       text: this.text,
-      html: this.html
+      html: this.html,
     }).then(() => {
       logger.info("email sent to " + this.to);
     }).catch((err: any) => {
