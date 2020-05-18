@@ -20,6 +20,7 @@ interface Config {
 }
 
 if (!existsSync(".env")) {
+  // eslint-disable-next-line no-console
   console.error(
     ".env file does not exists. please create it by copying .env.example into .env",
   );

@@ -1,7 +1,7 @@
 // Sideeffects
 import "reflect-metadata";
 
-// register dependencies
+// Register dependencies
 import "./config/di";
 
 import express, { NextFunction } from "express";
@@ -46,7 +46,7 @@ mongoose.connect(dbURL, {
 });
 
 
-app.use(helmet())
+app.use(helmet());
 app.use(exUseragent.express());
 app.use(passport.initialize());
 
