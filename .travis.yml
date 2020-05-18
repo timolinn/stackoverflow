@@ -1,15 +1,15 @@
 sudo: false
 language: node_js
 node_js:
-    - "stable"
+    - 12
 install:
-    - npm install
+    - npm ci
 services:
-    - redis-server
+    - redis
     - mongodb
 cache:
     directories:
         - node_modules
 script:
     - npm run build
-    - npm run test
+    - npm test

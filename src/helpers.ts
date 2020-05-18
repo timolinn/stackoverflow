@@ -40,10 +40,10 @@ export const signRefreshJWT = (user: UserInterface, options: jwt.SignOptions) =>
   role: user.role,
 }, config.jwt.refreshTokenSecret, options);
 
-export const extractTokenFromHeader = (req: Request): string => {
+export const extractTokenFromHeader = (req: Request) => {
   let { token } = req.query;
   if (!token && (req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   }
-  return <string>token;
+  return token;
 };
