@@ -1,0 +1,38 @@
+html
+head
+    style.
+        .link-btn {
+            height: 6em;
+            width: 10%;
+            padding: 1.5em auto;
+            margin: 1em auto;
+            background-color: #2ff9fe;
+            border: none;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: all 0.2s cubic-bezier(.4, 0, .2, 1);
+        }
+        .link-btn a {
+            text-decoration: none;
+            color: black;
+        }
+
+  body
+    div
+      p
+      h4 Dear #{name},
+    div
+      p
+      strong Welcome to StackoverflowClone,
+      p Click the button below to activate your account
+      p
+      button(class='link-btn').
+        #[a( href!=`${link}` ) Verify Account]
+      p If you didn't request this, simply ignore this message.
+      p
+      p The link expires after 24 hours to regenerate a new link for your email verification please click the button below.
+      button(class='link-btn').
+        #[a( href!=`${regenerateLink}` ) Regenerate Link]
+      p Yours,
+      p StackoverflowClone Team
