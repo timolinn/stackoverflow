@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Container from "typedi";
 import { validateRequestData, isObjectId } from "../../middleware/validation";
 import { catchError } from "../../helpers";
@@ -38,7 +38,6 @@ router.post(
 router.get(
   "/:questionId",
   isObjectId("questionId"),
-  validateRequestData,
   catchError(questionCtrl.get),
 );
 

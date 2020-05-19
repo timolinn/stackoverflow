@@ -1,11 +1,11 @@
 /* eslint-disable id-blacklist */
 /* eslint-disable no-underscore-dangle */
 import mongoose from "mongoose";
-import validator from "validator";
+import mongooseAutopopulate from "mongoose-autopopulate";
 
 export interface CommentInterface extends mongoose.Document {
-  answer: mongoose.Types.ObjectId;
-  user: { fullName: string; userID: mongoose.Types.ObjectId };
+  answer: string;
+  user: { fullName: string; userID: string };
   text: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,8 +13,8 @@ export interface CommentInterface extends mongoose.Document {
 
 export interface AnswerInterface extends mongoose.Document {
   text: string;
-  user: mongoose.Types.ObjectId;
-  question: mongoose.Types.ObjectId;
+  user: string;
+  question: string;
   comments: Array<CommentInterface>;
   createdAt: Date;
   updatedAt: Date;
@@ -63,11 +63,27 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
     type: mongoose.Types.ObjectId,
     required: true,
     ref: "User",
+    autopopulate: {
+      select: [
+        "firstName",
+        "lastName",
+        "email",
+        "id",
+      ],
+    },
   },
   question: {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: "Question",
+    autopopulate: {
+      select: [
+        "title",
+        "body",
+        "slug",
+        "tags",
+      ],
+    },
   },
   comments: {
     type: [CommentSchema],
@@ -90,5 +106,11 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
   },
 });
 
+CommentSchema.plugin(mongooseAutopopulate);
+AnswerSchema.plugin(mongooseAutopopulate);
+
 export const Answer = mongoose.model<AnswerInterface>("Answer", AnswerSchema);
-export const Comment = mongoose.model<CommentInterface>("Comment", CommentSchema);
+export const Comment = mongoose.model<CommentInterface>(
+  "Comment",
+  CommentSchema,
+);

@@ -34,7 +34,7 @@ Container.set(
 );
 Container.set(
   "answer.service",
-  new AnswerService<AnswerInterface>(Answer, logger),
+  new AnswerService<AnswerInterface>(Answer, logger, Container.get("question.service")),
 );
 
 // External services

@@ -32,7 +32,7 @@ export class QuestionController {
   };
 
   public get = async (req: Request, res: Response, next: NextFunction) => {
-    const question = await this.questionService.findUserById(req.params.question);
+    const question = await this.questionService.findQuestionById(req.params.questionId);
     return res.status(StatusCodes.OK).json(
       success(
         "question fetched successfully",

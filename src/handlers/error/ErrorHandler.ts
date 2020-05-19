@@ -3,8 +3,6 @@ import { logger } from "../../util/logger";
 import { error } from "../../middleware/response";
 import { StatusCodes } from "../http";
 
-// This is mostly for paths that lead to
-// Non web interfaces
 class ErrorHandler {
   public handleError(err: AppError) {
     let errObj;
@@ -19,7 +17,7 @@ class ErrorHandler {
         message: "something went wrong",
       };
     }
-    logger.debug(
+    logger.error(
       error(err.message || errObj.message, err.code || StatusCodes.INTERNAL_SERVER_ERROR, [errObj], err.stack)
     );
     return error(errObj.message, err.code || StatusCodes.INTERNAL_SERVER_ERROR, [errObj]);
