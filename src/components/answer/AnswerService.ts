@@ -8,19 +8,21 @@ import { ErrorNames } from "../../handlers/error";
 import { StatusCodes } from "../../handlers/http";
 
 @Service("answer.service")
-export class AnswerService<T extends Document> {
+export class AnswerService<T extends Document & AnswerInterface> {
   constructor(
-    @Inject("answer.model") private answer: Model<T>,
+    private answer: Model<T>,
     @Inject("logger") private logger: LoggerInterface,
-    @Inject("question.service") private questionService: QuestionService<QuestionInterface>,
   ) {
   }
 
-  async createAnswer<A extends AnswerInterface>(answer: A): Promise<T> {
-    const question = await this.questionService.findQuestionById(answer.question);
-    if (!question) {
-      throw new AppError(ErrorNames.ResourceNotFound, StatusCodes.NOT_FOUND, {
-        description: "Sorry! we could not find that question",
+  async createAnswer(answer: T): Promise<T> {
+    const exists = this.answer.exists(
+      { user: answer.user, question: answer.question },
+    );
+
+    if (exists) {
+      throw new AppError(ErrorNames.BadRequestError, StatusCodes.BAD_REQUEST, {
+        description: "user already answered this question",
         isOperational: true,
       });
     }
@@ -41,5 +43,9 @@ export class AnswerService<T extends Document> {
       });
     }
     return answer;
+  }
+
+  async findAnswerByQuestionId(questionId: string): Promise<Array<T>> {
+    return this.answer.find({ question: questionId });
   }
 }

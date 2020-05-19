@@ -1,9 +1,10 @@
 import { Model, Document, Query } from "mongoose";
 import { Service } from "typedi";
 import {logger} from "../../util/logger";
+import { UserInterface } from "./userModel";
 
 @Service("user.service")
-export default class UserService<T extends Document> {
+export default class UserService<T extends Document & UserInterface> {
   constructor(private user: Model<T>) {
 
   }

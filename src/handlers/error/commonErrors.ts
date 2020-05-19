@@ -8,6 +8,7 @@ export enum ErrorNames {
   AuthenticationError = "AuthenticationError",
   UnauthorizedError = "UnauthorizedError",
   BadGatewayError = "BadGatewayError",
+  BadRequestError = "BadRequestError",
   InvalidMethodError = "InvalidMethod",
   InternalServerError = "InternalServerError",
   NoTokenError = "NoTokenError",

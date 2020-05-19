@@ -81,7 +81,6 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
         "title",
         "body",
         "slug",
-        "tags",
       ],
     },
   },

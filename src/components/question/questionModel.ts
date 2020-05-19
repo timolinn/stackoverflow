@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
 import mongooseAutopopulate from "mongoose-autopopulate";
-import { AnswerInterface, CommentSchema } from "../answer";
+import { CommentSchema, CommentInterface } from "../answer";
 
 const Schema = mongoose.Schema;
 export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
@@ -55,9 +55,9 @@ export interface QuestionInterface extends mongoose.Document {
   title: string;
   user: mongoose.Types.ObjectId;
   body: string;
-  answers: Array<AnswerInterface>;
   slug: string;
   tags: Array<string>;
+  comments: Array<CommentInterface>;
   views: number;
   createdAt: Date;
   updatedAt: Date;

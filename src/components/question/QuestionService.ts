@@ -3,16 +3,28 @@ import { Service, Inject } from "typedi";
 import { LoggerInterface } from "../../util/logger";
 import { AppError, ErrorNames } from "../../handlers/error";
 import { StatusCodes } from "../../handlers/http";
+import { AnswerInterface, AnswerService } from "../answer";
+import { QuestionInterface } from "./questionModel";
+import slugify from "slugify";
 
 @Service("question.service")
-export class QuestionService<T extends Document> {
+export class QuestionService<T extends Document & QuestionInterface> {
   constructor(
-    @Inject("question.model") private question: Model<T>,
+    private question: Model<T>,
     @Inject("logger") private logger: LoggerInterface,
   ) {
   }
 
   async createQuestion(question: T): Promise<T> {
+    const exists = this.question.exists(
+      { user: question.user, slug: slugify(question.title) },
+    );
+    if (exists) {
+      throw new AppError(ErrorNames.BadRequestError, StatusCodes.BAD_REQUEST, {
+        description: "user already asked this question",
+        isOperational: true,
+      });
+    }
     return this.question.create(question);
   }
 
