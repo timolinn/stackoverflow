@@ -38,7 +38,7 @@ export default <Config> {
   MONGODB_URI: production
     ? process.env.MONGODB_URI
     : process.env.MONGODB_URI_LOCAL,
-  TEST_DB: "mongodb://localhost:27017/flash-docx-test",
+  TEST_DB: "mongodb://localhost:27017/stackoverflow-clone-test",
   jwt: {
     secret: test ? "2655D4EB4E0E7F5AA31AD6F2C140CF586C65980C24BE94E9BD5ACE4AD50761FC"
       : process.env.JWT_SECRET,

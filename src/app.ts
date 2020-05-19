@@ -27,6 +27,9 @@ import passport from "./config/passport";
 // Routes
 import authRouter from "./components/auth/AuthRoutes";
 import userRouter from "./components/user/UserRoutes";
+import questionRouter from "./components/question/questionRoutes";
+import answerRouter from "./components/answer/answerRoutes";
+
 import isBlacklisted from "./middleware/isBlacklisted";
 
 // Create express application
@@ -45,8 +48,9 @@ mongoose.connect(dbURL, {
   process.exit(1);
 });
 
-
+// Adds default security headers
 app.use(helmet());
+
 app.use(exUseragent.express());
 app.use(passport.initialize());
 
@@ -89,9 +93,12 @@ app.use(bodyParser.json());
 app.use(isBlacklisted); // Checks if the auth token is blacklisted
 
 app.get("/", (req: express.Request, res: express.Response) =>
-  res.status(StatusCodes.OK).json({ status: "success", message: "Flash Docx API", data: null }));
+  res.status(StatusCodes.OK)
+    .json({ status: "success", message: "StackoverflowClone API", data: null }));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/questions", questionRouter);
+app.use("/api/v1/answers", answerRouter);
 
 // Handle favicon requests from browsers
 app.get("/favicon.ico", (req, res) => res.sendStatus(StatusCodes.NO_CONTENT));

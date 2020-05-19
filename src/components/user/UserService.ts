@@ -1,4 +1,3 @@
-import { User, UserInterface } from "./UserModel";
 import { Model, Document, Query } from "mongoose";
 import { Service } from "typedi";
 import {logger} from "../../util/logger";

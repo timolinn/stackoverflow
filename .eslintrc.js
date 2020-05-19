@@ -100,7 +100,6 @@ module.exports = {
             "as-needed"
         ],
         "camelcase": "error",
-        "capitalized-comments": "error",
         "comma-dangle": [
             "error",
             "always-multiline"

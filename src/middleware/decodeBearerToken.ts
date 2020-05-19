@@ -6,9 +6,9 @@ import { logger } from "../util/logger";
 import jwt from "jsonwebtoken";
 import Container from "typedi";
 import UserService from "../components/user/UserService";
-import { UserInterface } from "../components/user/UserModel";
+import { UserInterface } from "../components/user/userModel";
 import config from "../config";
-import { extractTokenFromHeader, signJWT, signRefreshJWT } from "../helpers";
+import { extractTokenFromHeader, signJWT, signRefreshJWT, DecodedUser } from "../helpers";
 import uuid from "uuid";
 
 /**
@@ -91,7 +91,7 @@ export default function(req: Request, res: Response, next: NextFunction) {
                   await user.save().catch((e) =>
                     logger.debug("Error saving refresh token " + e)
                   );
-                  logger.info(`new token generated for ${user}`);
+                  logger.info(`new token generated for ${user.id}`);
                   res.setHeader("X-JWT", newToken);
                   req.user = jwt.decode(newToken) || {};
                   return next();
@@ -123,7 +123,7 @@ export default function(req: Request, res: Response, next: NextFunction) {
         );
       }
 
-      req.user = decodedJWT;
+      req.user = <DecodedUser> decodedJWT;
       next();
     },
   )(req, res, next);

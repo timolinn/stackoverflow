@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { logger } from "../util/logger";
 import redisClient from "../lib/redisClient";
-import { User } from "../components/user/UserModel";
+import { User } from "../components/user/userModel";
 
 export function teardown(done: any) {
   mongoose.connection.db.dropCollection("users", (err, result) => {

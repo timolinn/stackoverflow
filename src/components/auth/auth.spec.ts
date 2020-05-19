@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../app";
 import Container from "typedi";
 import UserService from "../user/UserService";
-import { UserInterface, User } from "../user/UserModel";
+import { UserInterface, User } from "../user/userModel";
 import { teardown } from "../../util/testutil";
 
 describe("AuthController", () => {
