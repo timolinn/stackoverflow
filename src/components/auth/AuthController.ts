@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Service, Inject } from "typedi";
 import UserService from "../user/UserService";
-import { UserInterface } from "../user/UserModel";
+import { UserInterface } from "../user/userModel";
 import { LoggerInterface } from "../../util/logger";
 import { success, error } from "../../middleware/response";
 import passport from "passport";

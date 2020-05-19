@@ -55,7 +55,7 @@ export const isObjectId = (...params: string[]) =>
             StatusCodes.BAD_REQUEST,
             {
               isOperational: true,
-              description: "invalid url parameter",
+              description: `invalid url parameter: ${param} = ${value}`,
             },
           ),
         );

@@ -3,7 +3,7 @@ import passportLocal from "passport-local";
 import passportJWT, { ExtractJwt } from "passport-jwt";
 import Container from "typedi";
 import UserService from "../components/user/UserService";
-import { UserInterface } from "../components/user/UserModel";
+import { UserInterface } from "../components/user/userModel";
 import config from "./";
 import { AppError, ErrorNames } from "../handlers/error";
 import { StatusCodes } from "../handlers/http";
