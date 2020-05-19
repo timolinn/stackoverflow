@@ -61,6 +61,7 @@ Container.set(
   "question.controller",
   new QuestionController(
     Container.get("question.service"),
+    Container.get("answer.service"),
     logger,
     Container.get("mailer"),
   ),
@@ -69,6 +70,7 @@ Container.set(
   "answer.controller",
   new AnswerController(
     Container.get("answer.service"),
+    Container.get("question.service"),
     logger,
     Container.get("mailer"),
   ),

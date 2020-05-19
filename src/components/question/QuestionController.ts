@@ -5,14 +5,17 @@ import { Request, Response, NextFunction } from "express";
 import { success } from "../../middleware/response";
 import { StatusCodes } from "../../handlers/http";
 import { MailerInterface } from "../../services/Mailer";
-import { UserInterface } from "../user/userModel";
 import { DecodedUser } from "../../helpers";
+import { AnswerInterface, AnswerService } from "../answer";
 
 @Service("question.controller")
 export class QuestionController {
   constructor(
     @Inject("question.service") private questionService: QuestionService<
     QuestionInterface
+    >,
+    @Inject("answer.service") private answerService: AnswerService<
+    AnswerInterface
     >,
     @Inject("logger") private logger: LoggerInterface,
     @Inject("mailer") private mailer: MailerInterface
@@ -32,11 +35,12 @@ export class QuestionController {
   };
 
   public get = async (req: Request, res: Response, next: NextFunction) => {
-    const question = await this.questionService.findUserById(req.params.question);
+    const question = await this.questionService.findQuestionById(req.params.questionId);
+    const answers = await this.answerService.findAnswerByQuestionId(req.params.questionId);
     return res.status(StatusCodes.OK).json(
       success(
         "question fetched successfully",
-        { kind: "Question", items: [question] },
+        { kind: "Question", items: [{...question?.toJSON(), answers }] },
       ),
     );
   };
