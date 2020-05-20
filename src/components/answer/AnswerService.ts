@@ -6,11 +6,13 @@ import { AnswerInterface } from "./answerModel";
 import { AppError } from "../../handlers/error";
 import { ErrorNames } from "../../handlers/error";
 import { StatusCodes } from "../../handlers/http";
+import { Voter } from "../voter/Voter";
 
 @Service("answer.service")
 export class AnswerService<T extends Document & AnswerInterface> {
   constructor(
     private answer: Model<T>,
+    private voter: Voter,
     @Inject("logger") private logger: LoggerInterface,
   ) {
   }

@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import slugify from "slugify";
 import mongooseAutopopulate from "mongoose-autopopulate";
 import { CommentSchema, CommentInterface } from "../answer";
+import { VotableInterface } from "../voter/Voter";
+import { QuestionUpVote, QuestionDownVote } from "../voter";
 
 const Schema = mongoose.Schema;
 export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
@@ -37,6 +39,14 @@ export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
     type: [String],
   },
   views: Number,
+  totalUpvotes: {
+    type: Number,
+    default: 0,
+  },
+  totalDownvotes: {
+    type: Number,
+    default: 0,
+  },
 }, { timestamps: true, toJSON: {
   virtuals: true,
   transform(doc, ret, options) {
@@ -51,7 +61,7 @@ export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
   },
 } });
 
-export interface QuestionInterface extends mongoose.Document {
+export interface QuestionInterface extends mongoose.Document, VotableInterface {
   title: string;
   user: mongoose.Types.ObjectId;
   body: string;
@@ -78,5 +88,50 @@ QuestionSchema.pre<QuestionInterface>("validate", function(next) {
 });
 
 QuestionSchema.plugin(mongooseAutopopulate);
+
+QuestionSchema.methods = <QuestionInterface> {
+  async upvote(qualified: boolean, userId: string): Promise<VotableInterface> {
+    const data = {
+      question: this.id,
+      user: userId,
+    };
+
+    const vote = await QuestionUpVote.findOne(data);
+    if (!vote) {
+      await QuestionUpVote.create(data);
+    } else {
+      vote.count += 1;
+      vote.save();
+    }
+
+    if (qualified) {
+      this.totalDownvotes++;
+      await this.save();
+    }
+
+    return this;
+  },
+  async downvote(qualified: boolean, userId: string): Promise<VotableInterface> {
+    const data = {
+      question: this.id,
+      user: userId,
+    };
+
+    const vote = await QuestionDownVote.findOne(data);
+    if (!vote) {
+      await QuestionDownVote.create(data);
+    } else {
+      vote.count++;
+      vote.save();
+    }
+
+    if (qualified) {
+      this.totalDownvotes--;
+      await this.save();
+    }
+
+    return this;
+  },
+};
 
 export const Question = mongoose.model<QuestionInterface>("Question", QuestionSchema);

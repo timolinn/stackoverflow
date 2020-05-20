@@ -14,5 +14,6 @@ export enum ErrorNames {
   NoTokenError = "NoTokenError",
   JsonWebTokenError = "JsonWebTokenError",
   TokenExpiredError = "TokenExpiredError",
-  ForbiddenRequestError = "ForbiddenRequestError"
+  ForbiddenRequestError = "ForbiddenRequestError",
+  InvalidVoteTypeError = "InvalidVoteTypeError"
 }

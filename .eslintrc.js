@@ -117,11 +117,8 @@ module.exports = {
         "id-blacklist": [
             "error",
             "any",
-            "Number",
             "number",
-            "String",
             "string",
-            "Boolean",
             "boolean",
             "Undefined",
             "undefined"

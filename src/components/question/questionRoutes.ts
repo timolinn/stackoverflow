@@ -10,7 +10,7 @@ const questionCtrl = Container.get<QuestionController>("question.controller");
 
 /**
  * @swagger
- * /users/signup:
+ * /question:
  *  get:
  *    security:
  *    description: Returns all users
@@ -39,6 +39,40 @@ router.get(
   "/:questionId",
   isObjectId("questionId"),
   catchError(questionCtrl.get),
+);
+
+/**
+ * @swagger
+ * /question/upvote:
+ *  get:
+ *    security:
+ *    description: Returns all users
+ *    summary: Get all registered user.
+ *    tags:
+ *      - User
+ */
+router.post(
+  "/:questionId/upvote",
+  isObjectId("questionId"),
+  decodeBearerToken,
+  catchError(questionCtrl.upvote),
+);
+
+/**
+ * @swagger
+ * /question/downvote:
+ *  get:
+ *    security:
+ *    description: Returns all users
+ *    summary: Get all registered user.
+ *    tags:
+ *      - User
+ */
+router.post(
+  "/:questionId/downvote",
+  isObjectId("questionId"),
+  decodeBearerToken,
+  catchError(questionCtrl.downvote),
 );
 
 export default router;

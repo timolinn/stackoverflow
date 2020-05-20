@@ -25,16 +25,17 @@ import UserController from "../components/user/UserController";
 import { logger } from "../util/logger";
 import Mailer from "../services/Mailer";
 import sendgrid from "../services/sendgrid";
+import { Voter } from "../components/voter/Voter";
 
 // Services
 Container.set("user.service", new UserService<UserInterface>(User));
 Container.set(
   "question.service",
-  new QuestionService<QuestionInterface>(Question, logger),
+  new QuestionService<QuestionInterface>(Question, new Voter(), logger),
 );
 Container.set(
   "answer.service",
-  new AnswerService<AnswerInterface>(Answer, logger),
+  new AnswerService<AnswerInterface>(Answer, new Voter(), logger),
 );
 
 // External services

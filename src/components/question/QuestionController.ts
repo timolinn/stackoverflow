@@ -18,14 +18,16 @@ export class QuestionController {
     AnswerInterface
     >,
     @Inject("logger") private logger: LoggerInterface,
-    @Inject("mailer") private mailer: MailerInterface
+    @Inject("mailer") private mailer: MailerInterface,
   ) {}
 
   public create = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
     const user = <DecodedUser> req.user;
     this.logger.info(user);
-    const question = await this.questionService.createQuestion({...data, user: user.userId});
+    const question = await this.questionService.createQuestion(
+      { ...data, user: user.userId },
+    );
     return res.status(StatusCodes.OK).json(
       success(
         "new question created successfully",
@@ -35,13 +37,41 @@ export class QuestionController {
   };
 
   public get = async (req: Request, res: Response, next: NextFunction) => {
-    const question = await this.questionService.findQuestionById(req.params.questionId);
-    const answers = await this.answerService.findAnswerByQuestionId(req.params.questionId);
+    const question = await this.questionService.findQuestionById(
+      req.params.questionId,
+    );
+    const answers = await this.answerService.findAnswerByQuestionId(
+      req.params.questionId,
+    );
     return res.status(StatusCodes.OK).json(
       success(
         "question fetched successfully",
-        { kind: "Question", items: [{...question?.toJSON(), answers }] },
+        { kind: "Question", items: [{ ...question?.toJSON(), answers }] },
       ),
+    );
+  };
+
+  public upvote = async (req: Request, res: Response, next: NextFunction) => {
+    const user = <DecodedUser> req.user;
+    const question = await this.questionService.upvote(
+      req.params.questionId,
+      user.userId,
+    );
+
+    return res.status(StatusCodes.OK).json(
+      success("question upvoted", { kind: "Question", items: [question] }),
+    );
+  };
+
+  public downvote = async (req: Request, res: Response, next: NextFunction) => {
+    const user = <DecodedUser> req.user;
+    const question = await this.questionService.downvote(
+      req.params.questionId,
+      user.userId,
+    );
+
+    return res.status(StatusCodes.OK).json(
+      success("question downvoted", { kind: "Question", items: [question] }),
     );
   };
 }

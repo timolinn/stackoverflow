@@ -84,6 +84,10 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
       ],
     },
   },
+  accepted: {
+    type: Boolean,
+    default: false,
+  },
   comments: {
     type: [CommentSchema],
   },
