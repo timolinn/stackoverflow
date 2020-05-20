@@ -48,6 +48,7 @@
         "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run serve-debug\""
     },
     "dependencies": {
+        "@elastic/elasticsearch": "^7.7.1",
         "@hapi/joi": "^16.1.8",
         "@sendgrid/mail": "^6.4.0",
         "@types/helmet": "0.0.47",
