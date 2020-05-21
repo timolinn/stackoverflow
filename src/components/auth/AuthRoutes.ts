@@ -55,7 +55,11 @@ router.post("/signin", validateRequestData, catchError(authCtrl.signIn));
  *       200:
  *         description: signin
  */
-router.post("/password/forgot", validateRequestData, catchError(authCtrl.forgotPassword));
+router.post(
+  "/password/forgot",
+  validateRequestData,
+  catchError(authCtrl.forgotPassword),
+);
 
 /**
  * @swagger
@@ -67,7 +71,12 @@ router.post("/password/forgot", validateRequestData, catchError(authCtrl.forgotP
  *    tags:
  *      - Auth
  */
-router.patch("/password/reset", validateRequestData, decodeBearerToken, catchError(authCtrl.resetPassword));
+router.patch(
+  "/password/reset",
+  validateRequestData,
+  decodeBearerToken,
+  catchError(authCtrl.resetPassword),
+);
 
 /**
  * @swagger

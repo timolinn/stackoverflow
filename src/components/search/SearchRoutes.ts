@@ -1,22 +1,25 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Container from "typedi";
-import { validateRequestData, isObjectId } from "../../middleware/validation";
 import { catchError } from "../../helpers";
 import { SearchController } from ".";
-import decodeBearerToken from "../../middleware/decodeBearerToken";
 
 const router = Router();
 const searchCtrl = Container.get<SearchController>("search.controller");
 
 /**
  * @swagger
- * /users/signup:
- *  get:
- *    security:
- *    description: Returns all users
- *    summary: Get all registered user.
+ * /search:
+ *  post:
+ *    description: This endpoint enables a user search the database.
+ *    summary: Search
+ *    parameters:
+ *      - name: query
+ *        in: query_string
+ *        required: true
+ *        schema:
+ *          type: string
  *    tags:
- *      - User
+ *      - search
  */
 router.get(
   "/",

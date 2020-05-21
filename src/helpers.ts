@@ -7,6 +7,10 @@ import { StatusCodes } from "./handlers/http";
 import sendgrid from "./services/sendgrid";
 import { ErrorNames, AppError } from "./handlers/error";
 import { logger } from "./util/logger";
+import Container from "typedi";
+import UserService from "./components/user/UserService";
+import { QuestionService, QuestionInterface } from "./components/question";
+import { AnswerService, AnswerInterface } from "./components/answer";
 
 export interface DecodedUser {
   userId: string;
@@ -82,3 +86,34 @@ export const extractTokenFromHeader = (req: Request) => {
   }
   return token;
 };
+
+export async function seeder(req: Request, res: Response, next: NextFunction) {
+  const user = await Container.get<UserService<UserInterface>>("user.service")
+    .createUser(
+      <UserInterface> {
+        firstName: "Eden",
+        lastName: "Hazard",
+        password: "hazard10",
+        email: "hazard@example.com",
+      },
+    );
+
+  const question = await Container.get<QuestionService<QuestionInterface>>(
+    "question.service",
+  ).createQuestion(
+    <QuestionInterface> {
+      title: "Who is a Gopher?",
+      body: "Who the heck are these gophers and occasional rustaceans!?!",
+      tags: ["go", "rust"],
+      user: user.id,
+    },
+  );
+  const answer = await Container.get<AnswerService<AnswerInterface>>("answer.service")
+    .createAnswer(
+      <AnswerInterface> {
+        text: "The gopher is the Go-to (pun intended)",
+        question: question.id,
+      },
+    );
+  res.json({ message: "data seeded successfully", data: { user, question, answer } });
+}

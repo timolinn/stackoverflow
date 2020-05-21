@@ -4,7 +4,7 @@ import "reflect-metadata";
 // Register dependencies
 import "./config/di";
 
-import express, { NextFunction } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import morganLogger from "morgan";
@@ -18,7 +18,7 @@ import { logger } from "./util/logger";
 import swaggerDefinition from "./docs/api-specs";
 import { errorHandler, AppError, ErrorNames } from "./handlers/error";
 import { StatusCodes } from "./handlers/http";
-import { renderEmail } from "./helpers";
+import { renderEmail, seeder, catchError } from "./helpers";
 
 
 // Load passport
@@ -111,6 +111,13 @@ app.get("/email/:template", renderEmail);
 // Setup Swagger/OpenAPI Documentation
 app.use("/api/v1/docs", swaggerUI.serve);
 app.get("/api/v1/docs", swaggerUI.setup(swaggerJSDoc(swaggerDefinition)));
+
+// Database seed route.
+// must remove before going to production
+// I realize there may be other ways to do this better
+// this feels easier, so ... ¯\_(ツ)_/¯
+// actually, this is bad and should not be in a real project
+app.get("/seed", catchError(seeder));
 
 // Match non existing routes
 app.use("*", (req, res, next) => {

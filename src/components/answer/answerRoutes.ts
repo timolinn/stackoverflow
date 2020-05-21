@@ -1,6 +1,6 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Container from "typedi";
-import { validateRequestData, isObjectId } from "../../middleware/validation";
+import { validateRequestData } from "../../middleware/validation";
 import { catchError } from "../../helpers";
 import { AnswerController } from ".";
 import decodeBearerToken from "../../middleware/decodeBearerToken";
@@ -12,10 +12,33 @@ const answerCtrl = Container.get<AnswerController>("answer.controller");
  * @swagger
  * /answers:
  *  post:
- *    description: creates a new answer document
- *    summary: Get all registered user.
+ *    description: This endpoint creates a new answer document that is attached to a question
+ *    summary: creates a new answer document
+ *    produces:
+ *       - application/json
+ *    parameters:
+ *      - name: Bearer token
+ *        in: Header
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: text
+ *        description: contains the user's answer
+ *        in: body
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: question
+ *        description: this should be a mongodb objectId that represent's the question
+ *        in: body
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      '200':
+ *        description: The Question
  *    tags:
- *      - User
+ *      - answers
  */
 router.post(
   "/",

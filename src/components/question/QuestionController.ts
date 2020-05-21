@@ -27,7 +27,7 @@ export class QuestionController {
     const question = await this.questionService.createQuestion(
       { ...data, user: user.userId },
     );
-    return res.status(StatusCodes.OK).json(
+    return res.status(StatusCodes.CREATED).json(
       success(
         "new question created successfully",
         { kind: "Question", items: [question] },
