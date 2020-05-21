@@ -18,7 +18,7 @@ export class AnswerService<T extends Document & AnswerInterface> {
   }
 
   async createAnswer(answer: T): Promise<T> {
-    const exists = this.answer.exists(
+    const exists = await this.answer.exists(
       { user: answer.user, question: answer.question },
     );
 

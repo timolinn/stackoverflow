@@ -29,6 +29,7 @@ import authRouter from "./components/auth/AuthRoutes";
 import userRouter from "./components/user/UserRoutes";
 import questionRouter from "./components/question/questionRoutes";
 import answerRouter from "./components/answer/answerRoutes";
+import searchRouter from "./components/search/SearchRoutes";
 
 import isBlacklisted from "./middleware/isBlacklisted";
 
@@ -45,7 +46,7 @@ mongoose.connect(dbURL, {
   logger.info("database connection established");
 }).catch((err) => {
   logger.error("database connection failed " + err);
-  process.exit(1);
+  // process.exit(1);
 });
 
 // Adds default security headers
@@ -99,6 +100,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/questions", questionRouter);
 app.use("/api/v1/answers", answerRouter);
+app.use("/api/v1/search", searchRouter);
 
 // Handle favicon requests from browsers
 app.get("/favicon.ico", (req, res) => res.sendStatus(StatusCodes.NO_CONTENT));

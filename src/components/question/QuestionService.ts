@@ -18,7 +18,7 @@ export class QuestionService<T extends Document & QuestionInterface> {
   }
 
   async createQuestion(question: T): Promise<T> {
-    const exists = this.question.exists(
+    const exists = await this.question.exists(
       { user: question.user, slug: slugify(question.title) },
     );
     if (exists) {

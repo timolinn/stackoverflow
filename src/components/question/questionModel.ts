@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable id-blacklist */
 /* eslint-disable no-underscore-dangle */
 import mongoose from "mongoose";
@@ -6,6 +7,8 @@ import mongooseAutopopulate from "mongoose-autopopulate";
 import { CommentSchema, CommentInterface } from "../answer";
 import { VotableInterface } from "../voter/Voter";
 import { QuestionUpVote, QuestionDownVote } from "../voter";
+import { Search, SearchService } from "../search";
+import Container from "typedi";
 
 const Schema = mongoose.Schema;
 export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
@@ -30,7 +33,9 @@ export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
     type: String,
     required: true,
   },
-  comments: [CommentSchema],
+  comments: {
+    type: [CommentSchema],
+  },
   slug: {
     type: String,
     required: true,
@@ -47,19 +52,23 @@ export const QuestionSchema: mongoose.Schema<QuestionInterface> = new Schema({
     type: Number,
     default: 0,
   },
-}, { timestamps: true, toJSON: {
-  virtuals: true,
-  transform(doc, ret, options) {
-    delete ret._id;
-    delete ret.__v;
+}, {
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform(doc, ret, options) {
+      delete ret._id;
+      delete ret.__v;
+    },
   },
-}, toObject: {
-  virtuals: true,
-  transform(doc, ret, options) {
-    delete ret._id;
-    delete ret.__v;
+  toObject: {
+    virtuals: true,
+    transform(doc, ret, options) {
+      delete ret._id;
+      delete ret.__v;
+    },
   },
-} });
+});
 
 export interface QuestionInterface extends mongoose.Document, VotableInterface {
   title: string;
@@ -73,6 +82,25 @@ export interface QuestionInterface extends mongoose.Document, VotableInterface {
   updatedAt: Date;
 }
 
+QuestionSchema.post<QuestionInterface>("save", function(doc, next) {
+  const body = {
+    id: doc.id,
+    title: doc.title,
+    body: doc.body,
+    slug: doc.slug,
+    tags: doc.tags,
+  };
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.index("questions", body);
+  next();
+});
+
+QuestionSchema.post<QuestionInterface>("remove", function(doc, next) {
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.remove("questions", doc.id);
+  next();
+});
+
 // Slugify question's title
 QuestionSchema.pre<QuestionInterface>("save", function(next) {
   if (!this.isModified("title")) return next();
@@ -81,7 +109,7 @@ QuestionSchema.pre<QuestionInterface>("save", function(next) {
 });
 
 // Slugify question's title
-// This is to prevent validation errors
+// This is to prevent validation errors for new records
 QuestionSchema.pre<QuestionInterface>("validate", function(next) {
   this.slug = slugify(this.title);
   next();
@@ -90,7 +118,12 @@ QuestionSchema.pre<QuestionInterface>("validate", function(next) {
 QuestionSchema.plugin(mongooseAutopopulate);
 
 QuestionSchema.methods = <QuestionInterface> {
-  async upvote(qualified: boolean, userId: string): Promise<VotableInterface> {
+  /**
+   *
+   * @param userId voting user ID
+   * @param qualified flags whether the user's vote should be "displayed".
+   */
+  async upvote(userId: string, qualified: boolean): Promise<VotableInterface> {
     const data = {
       question: this.id,
       user: userId,
@@ -111,7 +144,16 @@ QuestionSchema.methods = <QuestionInterface> {
 
     return this;
   },
-  async downvote(qualified: boolean, userId: string): Promise<VotableInterface> {
+
+  /**
+   *
+   * @param userId voting user ID
+   * @param qualified flags whether the user's vote should be "displayed".
+   */
+  async downvote(
+    userId: string,
+    qualified: boolean,
+  ): Promise<VotableInterface> {
     const data = {
       question: this.id,
       user: userId,
@@ -134,4 +176,7 @@ QuestionSchema.methods = <QuestionInterface> {
   },
 };
 
-export const Question = mongoose.model<QuestionInterface>("Question", QuestionSchema);
+export const Question = mongoose.model<QuestionInterface>(
+  "Question",
+  QuestionSchema,
+);

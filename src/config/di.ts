@@ -3,7 +3,6 @@
  */
 import { Container } from "typedi";
 
-import UserService from "../components/user/UserService";
 import {
   QuestionService,
   QuestionInterface,
@@ -17,17 +16,20 @@ import {
   AnswerController,
 } from "../components/answer";
 
-import { UserInterface, User } from "../components/user/userModel";
+import { Voter } from "../components/voter/Voter";
+import { SearchService, Search } from "../components/search";
 
 import AuthController from "../components/auth/AuthController";
+import { UserInterface, User } from "../components/user/userModel";
+import UserService from "../components/user/UserService";
 import UserController from "../components/user/UserController";
 
 import { logger } from "../util/logger";
 import Mailer from "../services/Mailer";
 import sendgrid from "../services/sendgrid";
-import { Voter } from "../components/voter/Voter";
 
 // Services
+Container.set("logger", logger);
 Container.set("user.service", new UserService<UserInterface>(User));
 Container.set(
   "question.service",
@@ -37,6 +39,7 @@ Container.set(
   "answer.service",
   new AnswerService<AnswerInterface>(Answer, new Voter(), logger),
 );
+Container.set("search.service", new SearchService(logger));
 
 // External services
 Container.set("mailer", new Mailer(sendgrid));

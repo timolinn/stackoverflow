@@ -24,7 +24,6 @@ export class QuestionController {
   public create = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
     const user = <DecodedUser> req.user;
-    this.logger.info(user);
     const question = await this.questionService.createQuestion(
       { ...data, user: user.userId },
     );

@@ -2,13 +2,19 @@ import mongoose from "mongoose";
 import { AppError, ErrorNames } from "../../handlers/error";
 import { StatusCodes } from "../../handlers/http";
 
+/**
+ * defines objects that support voting
+ */
 export interface VotableInterface {
   totalUpvotes: number;
   totalDownvotes: number;
-  upvote: (qualified: boolean, voterId: string) => Promise<VotableInterface>;
-  downvote: (qualified: boolean, voterId: string) => Promise<VotableInterface>;
+  upvote: (voterId: string, qualified: boolean) => Promise<VotableInterface>;
+  downvote: (voterId: string, qualified: boolean) => Promise<VotableInterface>;
 }
 
+/**
+ * defines voting data for Question's model
+ */
 export interface QuestionVoterInterface extends mongoose.Document {
   user: string;
   question: string;
@@ -46,12 +52,12 @@ export class Voter {
   public async add(candidate: VotableInterface, voter: string) {
     // TODO: Do house keeping, like checking if the voter is qualified to upvote
     const qualified = true;
-    return candidate.upvote(qualified, voter);
+    return candidate.upvote(voter, qualified);
   }
 
   public async remove(candidate: VotableInterface, voter: string) {
     // TODO: Do house keeping, like checking if the voter is qualified to downvote
     const qualified = true;
-    return candidate.downvote(qualified, voter);
+    return candidate.downvote(voter, qualified);
   }
 }
