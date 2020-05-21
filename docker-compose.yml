@@ -1,0 +1,48 @@
+version: "2"
+
+services:
+  api:
+    restart: always
+    build: ./
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    environment:
+      - MONGODB_URI_LOCAL=${MONGODB_DOCKER_BRIDGE}
+      - REDIS_HOST=${REDIS_HOST_BRIDGE}
+      - ELASTIC_SEARCH_HOST=${ELASTIC_SEARCH_HOST_BRIDGE}
+
+  redis:
+    image: redis
+    volumes:
+      - redis:/data/
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - dbdata:/data/mongodb/
+    networks:
+      - app-network
+    ports:
+      - "27018:27017"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    environment:
+      - discovery.type=single-node
+    networks:
+      - app-network
+
+volumes:
+  dbdata:
+  redis:
+
+networks:
+  app-network:

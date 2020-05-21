@@ -17,6 +17,11 @@ interface Config {
   mail: { from: { name: string; email: string } };
   sendgrid: { apiKey: string };
   redis: { host: string; port: string };
+  elasticsearch: {
+    url: string;
+    maxRetries: number;
+    requestTimeout: number;
+  };
 }
 
 const production = process.env.NODE_ENV === "production";
@@ -61,5 +66,10 @@ export default <Config> {
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+  },
+  elasticsearch: {
+    url: process.env.ELASTIC_SEARCH_HOST || "http://localhost:9200",
+    maxRetries: 5,
+    requestTimeout: 60000,
   },
 };

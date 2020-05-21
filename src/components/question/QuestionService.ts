@@ -3,20 +3,22 @@ import { Service, Inject } from "typedi";
 import { LoggerInterface } from "../../util/logger";
 import { AppError, ErrorNames } from "../../handlers/error";
 import { StatusCodes } from "../../handlers/http";
-import { AnswerInterface, AnswerService } from "../answer";
 import { QuestionInterface } from "./questionModel";
 import slugify from "slugify";
+import { DecodedUser } from "../../helpers";
+import { Voter, VoteType } from "../voter/Voter";
 
 @Service("question.service")
 export class QuestionService<T extends Document & QuestionInterface> {
   constructor(
     private question: Model<T>,
+    private voter: Voter,
     @Inject("logger") private logger: LoggerInterface,
   ) {
   }
 
   async createQuestion(question: T): Promise<T> {
-    const exists = this.question.exists(
+    const exists = await this.question.exists(
       { user: question.user, slug: slugify(question.title) },
     );
     if (exists) {
@@ -41,6 +43,18 @@ export class QuestionService<T extends Document & QuestionInterface> {
         isOperational: true,
       });
     }
+    return question;
+  }
+
+  async upvote(questionId: string, userId: string) {
+    const question = await this.findQuestionById(questionId);
+    await this.voter.cast(question!, userId, VoteType.Upvote);
+    return question;
+  }
+
+  async downvote(questionId: string, userId: string) {
+    const question = await this.findQuestionById(questionId);
+    await this.voter.cast(question!, userId, VoteType.Downvote);
     return question;
   }
 }

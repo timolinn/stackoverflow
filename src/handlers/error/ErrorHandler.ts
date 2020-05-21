@@ -6,7 +6,7 @@ import { StatusCodes } from "../http";
 class ErrorHandler {
   public handleError(err: AppError) {
     let errObj;
-    if (this.isTrustedError(err)) {
+    if (this?.isTrustedError(err)) {
       errObj = {
         reason: err.name || "unknown",
         message: err.message || "something went wrong",

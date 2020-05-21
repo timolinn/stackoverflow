@@ -1,7 +1,10 @@
+/* eslint-disable camelcase */
 /* eslint-disable id-blacklist */
 /* eslint-disable no-underscore-dangle */
 import mongoose from "mongoose";
 import mongooseAutopopulate from "mongoose-autopopulate";
+import Container from "typedi";
+import { SearchService } from "../search";
 
 export interface CommentInterface extends mongoose.Document {
   answer: string;
@@ -84,6 +87,10 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
       ],
     },
   },
+  accepted: {
+    type: Boolean,
+    default: false,
+  },
   comments: {
     type: [CommentSchema],
   },
@@ -103,6 +110,22 @@ export const AnswerSchema: mongoose.Schema<AnswerInterface> = new Schema({
       delete ret.__v;
     },
   },
+});
+
+AnswerSchema.post<AnswerInterface>("save", function(doc, next) {
+  const body = {
+    id: doc.id,
+    text: doc.text,
+  };
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.index("answers", body);
+  next();
+});
+
+AnswerSchema.post<AnswerInterface>("remove", function(doc, next) {
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.remove("answers", doc.id);
+  next();
 });
 
 CommentSchema.plugin(mongooseAutopopulate);

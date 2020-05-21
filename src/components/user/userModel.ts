@@ -1,16 +1,19 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable id-blacklist */
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt-nodejs";
+import uuid from "uuid";
 import { signJWT, signRefreshJWT } from "../../helpers";
 import config from "../../config";
-import uuid from "uuid";
+import Container from "typedi";
+import { SearchService } from "../search";
 
 enum Gender {
   Male = 1,
   Female = 0,
-  Other = 2
+  Other = 2,
 }
 
 const Schema = mongoose.Schema;
@@ -63,19 +66,23 @@ export const UserSchema: mongoose.Schema<UserInterface> = new Schema({
   avatar: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-}, { timestamps: true, toJSON: {
-  virtuals: true,
-  transform(doc, ret, options) {
-    delete ret._id;
-    delete ret.__v;
+}, {
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform(doc, ret, options) {
+      delete ret._id;
+      delete ret.__v;
+    },
   },
-}, toObject: {
-  virtuals: true,
-  transform(doc, ret, options) {
-    delete ret._id;
-    delete ret.__v;
+  toObject: {
+    virtuals: true,
+    transform(doc, ret, options) {
+      delete ret._id;
+      delete ret.__v;
+    },
   },
-} });
+});
 
 export interface UserInterface extends mongoose.Document {
   firstName: string;
@@ -99,8 +106,12 @@ export interface UserInterface extends mongoose.Document {
   encryptPassword: (plainText: string) => string;
   comparePassword: (password: string) => boolean;
   serializeAuthenticatedUser: () => {
-    id: any; email: string; isVerified: boolean; fullName: string;
-    accessToken: string; refreshToken: string;
+    id: any;
+    email: string;
+    isVerified: boolean;
+    fullName: string;
+    accessToken: string;
+    refreshToken: string;
   };
 }
 
@@ -108,6 +119,23 @@ export interface UserInterface extends mongoose.Document {
 UserSchema.pre<UserInterface>("save", function(next) {
   if (!this.isModified("password")) return next();
   this.password = this.encryptPassword(this.password);
+  next();
+});
+
+UserSchema.post<UserInterface>("save", function(doc, next) {
+  const body = {
+    id: doc.id,
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+  };
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.index("users", body);
+  next();
+});
+
+UserSchema.post<UserInterface>("remove", function(doc, next) {
+  const searchService = Container.get<SearchService>("search.service");
+  searchService.remove("users", doc.id);
   next();
 });
 
@@ -130,9 +158,14 @@ UserSchema.methods = <UserInterface> {
       email: this.email,
       isVerified: this.isVerified,
       fullName: this.fullName(),
-      accessToken: signJWT(this, { expiresIn: config.jwt.expiresIn, jwtid: jti }),
-      refreshToken: signRefreshJWT(this, { expiresIn: config.jwt.refreshTokenExpiresIn,
-        jwtid: jti }),
+      accessToken: signJWT(
+        this,
+        { expiresIn: config.jwt.expiresIn, jwtid: jti },
+      ),
+      refreshToken: signRefreshJWT(
+        this,
+        { expiresIn: config.jwt.refreshTokenExpiresIn, jwtid: jti },
+      ),
     };
   },
 };
